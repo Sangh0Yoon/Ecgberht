@@ -64,9 +64,12 @@ public class SimulationTheory {
     }
 
     private void updateRadius() {
-        if (radius == UnitType.Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange()) return;
-        if (Util.countUnitTypeSelf(UnitType.Terran_Siege_Tank_Tank_Mode) > 0) {
-            if (getGs().getPlayer().hasResearched(TechType.Tank_Siege_Mode)) {
+        boolean is_equal_attack_range_with_TerranSiegeTank = radius == UnitType.Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange();
+        if (is_equal_attack_range_with_TerranSiegeTank) return;
+        int TankMode_nums = Util.countUnitTypeSelf(UnitType.Terran_Siege_Tank_Tank_Mode);
+        if (TankMode_nums > 0) {
+            boolean is_learn_SiegeMode = getGs().getPlayer().hasResearched(TechType.Tank_Siege_Mode);
+            if (is_learn_SiegeMode) {
                 radius = UnitType.Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange();
                 return;
             }
