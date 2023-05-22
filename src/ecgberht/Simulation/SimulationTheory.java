@@ -41,11 +41,13 @@ public class SimulationTheory {
         simulator = new Simulator.Builder().build();
         evaluator = new Evaluator();
         factory = new BWAPI4JAgentFactory(bw.getBWMap());
-        if (ConfigManager.getConfig().ecgConfig.sscait) {
+        boolean is_student_starcraft_AI_tournament = ConfigManager.getConfig().ecgConfig.sscait;
+        if (is_student_starcraft_AI_tournament) {
             simFrames = 300;
             iterations = 0;
         }
-        switch (bw.getInteractionHandler().enemy().getRace()) {
+        Race enemy_race = bw.getInteractionHandler().enemy().getRace();
+        switch (enemy_race) {
             case Zerg:
                 radius = UnitType.Zerg_Sunken_Colony.groundWeapon().maxRange();
                 break;
