@@ -149,7 +149,7 @@ public class SimulationTheory {
      * Main method that runs every frame
      * If needed creates the clusters and SimInfos and run the simulations on them
      */
-    public void onFrameSim() {
+    public void runSimulationOnFrame() {
         time = System.currentTimeMillis();
         updateRadius();
         reset();
@@ -169,7 +169,7 @@ public class SimulationTheory {
     /**
      * Checks if there is no need to do extra work simulating, useful to save cpu power
      *
-     * @return True if there is no need for running {@link #onFrameSim()}, else returns false
+     * @return True if there is no need for running {@link #runSimulationOnFrame()}, else returns false
      */
     private boolean noNeedForSim() {
         int workerThreats = 0;
