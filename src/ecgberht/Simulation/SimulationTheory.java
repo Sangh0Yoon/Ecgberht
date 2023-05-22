@@ -257,35 +257,29 @@ public class SimulationTheory {
             try {
                 simulator.reset();
                 if (s.enemies.isEmpty()) continue;
-                for (UnitInfo u : s.allies) {
-                    Agent jU = factory.of(u.unit);
-                    simulator.addAgentA(jU);
-                    s.stateBefore.first.add(jU);
-                }
-                for (UnitInfo u : s.enemies) {
-                    if (u.unitType.isWorker() && u.visible && !u.unit.isAttacking()) continue;
-                    if (u.unitType.isBuilding() && !u.completed) continue;
-                    if (u.unitType == UnitType.Zerg_Creep_Colony || (!Util.isStaticDefense(u) && !u.unitType.canAttack()))
-                        continue;
-                    if (!u.unit.isDetected() && (u.unit instanceof DarkTemplar || u.burrowed)) {
-                        if (energy >= 1) energy -= 1;
-                        else {
-                            s.lose = true;
-                            break;
-                        }
-                    }
-                    Agent jU = factory.of(u.unit);
-                    simulator.addAgentB(jU);
-                    s.stateBefore.second.add(jU);
-                }
+                addAgentsToSimulator(s);
+                energy = addEnemiesToSimulator(energy, s);
                 if (s.lose) continue;
-                s.preSimScore = scores();
+                if(evaluateSimulator(s));
+                else s.lose = !scoreCalcASS(s, 2);
+            } catch (Exception e) {
+                System.err.println("Simulator ASS exception");
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private boolean evaluateSimulator(SimInfo s){
+        s.preSimScore = scores();
                 double estimate = evaluator.evaluate(s.stateBefore.first, s.stateBefore.second);
                 if (estimate < 0.1) {
                     s.lose = true;
-                    continue;
+                    return false;
                 }
-                if (estimate > 0.6) continue;
+                if (estimate > 0.6){
+                    return true;
+                }
                 simulator.simulate(simFrames);
                 s.postSimScore = scores();
                 s.stateAfter = new MutablePair<>(simulator.getAgentsA(), simulator.getAgentsB());
@@ -293,22 +287,47 @@ public class SimulationTheory {
                 int enemyLosses = s.preSimScore.second - s.postSimScore.second;
                 if (s.stateAfter.first.isEmpty()) {
                     s.lose = true;
-                    continue;
+                    return false;
                 }
-                if (enemyLosses > ourLosses * 1.35) continue;
+                if (enemyLosses > ourLosses * 1.35){
+                    return true;
+                }
                 simulator.simulate(simFrames);
                 s.postSimScore = scores();
                 s.stateAfter = new MutablePair<>(simulator.getAgentsA(), simulator.getAgentsB());
-                //Bad lose sim logic, testing
+
                 if (s.stateAfter.first.isEmpty()) s.lose = true;
                 else if (getGs().getStrat().name.equals("ProxyBBS")) s.lose = !scoreCalcASS(s, 1.2);
                 else if (getGs().getStrat().name.equals("ProxyEightRax")) s.lose = !scoreCalcASS(s, 1.35);
-                else s.lose = !scoreCalcASS(s, 2);
-            } catch (Exception e) {
-                System.err.println("Simulator ASS exception");
-                e.printStackTrace();
-            }
 
+                return false;
+    }
+
+    private int addEnemiesToSimulator(int energy, SimInfo s) {
+        for (UnitInfo u : s.enemies) {
+            if (u.unitType.isWorker() && u.visible && !u.unit.isAttacking()) continue;
+            if (u.unitType.isBuilding() && !u.completed) continue;
+            if (u.unitType == UnitType.Zerg_Creep_Colony || (!Util.isStaticDefense(u) && !u.unitType.canAttack()))
+                continue;
+            if (!u.unit.isDetected() && (u.unit instanceof DarkTemplar || u.burrowed)) {
+                if (energy >= 1) energy -= 1;
+                else {
+                    s.lose = true;
+                    break;
+                }
+            }
+            Agent jU = factory.of(u.unit);
+            simulator.addAgentB(jU);
+            s.stateBefore.second.add(jU);
+        }
+        return energy;
+    }
+
+    private void addAgentsToSimulator(SimInfo s) {
+        for (UnitInfo u : s.allies) {
+            Agent jU = factory.of(u.unit);
+            simulator.addAgentA(jU);
+            s.stateBefore.first.add(jU);
         }
     }
 
