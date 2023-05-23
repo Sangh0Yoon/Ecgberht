@@ -76,22 +76,28 @@ public class SimulationTheory {
         }
         switch (getGs().enemyRace) {
             case Zerg:
-                if (getGs().getPlayer().hasResearched(TechType.Irradiate)) {
+                boolean is_learn_irradiate = getGs().getPlayer().hasResearched(TechType.Irradiate);
+                if (is_learn_irradiate) {
                     radius = WeaponType.Irradiate.maxRange();
                     return;
                 }
                 break;
             case Terran:
-                if (getGs().getStrat() != null && getGs().getStrat().proxy && radius == UnitType.Terran_Missile_Turret.airWeapon().maxRange()) {
+                boolean is_exist_strategy = getGs().getStrat() != null;
+                boolean is_proxy_strategy = getGs().getStrat().proxy;
+                boolean is_equal_TurretMissile_AttackRange = radius == UnitType.Terran_Missile_Turret.airWeapon().maxRange();
+                if (is_exist_strategy && is_proxy_strategy && is_equal_TurretMissile_AttackRange) {
                     radius -= 32;
                 }
-                if (IntelligenceAgency.enemyHasType(UnitType.Terran_Siege_Tank_Tank_Mode)) {
+                boolean is_enemy_has_siegeTank = IntelligenceAgency.enemyHasType(UnitType.Terran_Siege_Tank_Tank_Mode);
+                if (is_enemy_has_siegeTank) {
                     radius = UnitType.Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange();
                     return;
                 }
                 break;
             case Protoss:
-                if (getGs().getPlayer().hasResearched(TechType.EMP_Shockwave)) {
+                boolean is_learn_EMP = getGs().getPlayer().hasResearched(TechType.EMP_Shockwave);
+                if (is_learn_EMP) {
                     radius = WeaponType.EMP_Shockwave.maxRange();
                     return;
                 }
@@ -99,18 +105,12 @@ public class SimulationTheory {
         }
     }
 
-    /**
-     * Clears all the info, clusters, SimInfos and the simulator
-     */
     private void reset() {
         friendly.clear();
         enemies.clear();
         simulations.clear();
     }
 
-    /**
-     * Using allied and enemy units create the clusters with them
-     */
     private void createClusters() {
         MeanShift clustering;
         createFriendlyClusters();
