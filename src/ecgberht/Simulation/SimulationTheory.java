@@ -148,9 +148,11 @@ public class SimulationTheory {
     }
 
     private boolean isArmyUnit(Unit u) {
+        boolean is_equal_proxyBBS_strategy = getGs().getStrat().name.equals("ProxyBBS");
+        boolean is_equal_proxyEightRax_strategy = getGs().getStrat().name.equals("ProxyEightRax")
         try {
             if (u == null || !u.exists()) return false;
-            if (u instanceof SCV && (getGs().getStrat().name.equals("ProxyBBS") || getGs().getStrat().name.equals("ProxyEightRax")))
+            if (u instanceof SCV && (is_equal_proxyBBS_strategy || is_equal_proxyEightRax_strategy))
                 return true;
             if (u instanceof MobileUnit && ((MobileUnit) u).getTransport() != null) return false;
             return u instanceof Marine || u instanceof Medic || u instanceof SiegeTank || u instanceof Firebat
@@ -161,10 +163,6 @@ public class SimulationTheory {
         }
     }
 
-    /**
-     * Main method that runs every frame
-     * If needed creates the clusters and SimInfos and run the simulations on them
-     */
     public void runSimulationOnFrame() {
         time = System.currentTimeMillis();
         updateRadius();
