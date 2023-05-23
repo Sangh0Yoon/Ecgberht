@@ -132,7 +132,7 @@ public class SimulationTheory {
                     || is_less_than_four_seconds)
                 enemyUnits.add(u);
         }
-        clustering = new MeanShift(enemyUnits, radius);
+        clustering = MeanShift.getInstance(enemyUnits, radius);
         enemies = clustering.run(iterations);
     }
 
@@ -143,7 +143,7 @@ public class SimulationTheory {
         }
         getGs().DBs.keySet().stream().map(b -> getGs().unitStorage.getAllyUnits().get(b)).forEach(myUnits::add); // Bunkers
         getGs().agents.values().stream().map(g -> g.unitInfo).forEach(myUnits::add); // Agents
-        MeanShift clustering = new MeanShift(myUnits, radius);
+        MeanShift clustering = MeanShift.getInstance(myUnits, radius);
         friendly = clustering.run(iterations);
     }
 

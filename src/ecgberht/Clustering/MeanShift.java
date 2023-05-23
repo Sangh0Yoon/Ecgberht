@@ -12,11 +12,13 @@ import java.util.List;
 
 public class MeanShift {
 
-    public long time = 0;
+    private static MeanShift instance;
+
+    private long time = 0;
     private double radius;
     private List<UnitPos> points = new ArrayList<>();
 
-    public MeanShift(Collection<UnitInfo> units, double radius) {
+    private MeanShift(Collection<UnitInfo> units, double radius) {
         this.radius = Math.pow(radius, 2);
         for (UnitInfo u : units) {
             boolean isValidUnit = u.unit instanceof Building && !Util.isStaticDefense(u) && !u.visible;
@@ -24,6 +26,17 @@ public class MeanShift {
             Position p = u.lastPosition;
             this.points.add(new UnitPos(u, p.getX(), p.getY()));
         }
+    }
+
+    public static MeanShift getInstance(Collection<UnitInfo> units, double radius) {
+        if (instance == null) {
+            instance = new MeanShift(units, radius);
+        }
+        return instance;
+    }
+
+    public long getTime(){
+        return time;
     }
 
     public List<Cluster> run(int iterations) {
