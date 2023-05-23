@@ -149,7 +149,7 @@ public class SimulationTheory {
 
     private boolean isArmyUnit(Unit u) {
         boolean is_equal_proxyBBS_strategy = getGs().getStrat().name.equals("ProxyBBS");
-        boolean is_equal_proxyEightRax_strategy = getGs().getStrat().name.equals("ProxyEightRax")
+        boolean is_equal_proxyEightRax_strategy = getGs().getStrat().name.equals("ProxyEightRax");
         try {
             if (u == null || !u.exists()) return false;
             if (u instanceof SCV && (is_equal_proxyBBS_strategy || is_equal_proxyEightRax_strategy))
