@@ -1,18 +1,19 @@
 package ecgberht;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.openbw.bwapi4j.BW;
+import org.openbw.bwapi4j.BWEventListener;
 
 import ecgberht.Clustering.Cluster;
 import ecgberht.Simulation.SimInfo;
 import ecgberht.Simulation.SimulationTheory;
 
 public class SimulationTheoryTest {
-    BW objBW = new BW(null);
+    private BWEventListener BWEventListener;
+	BW objBW = new BW(BWEventListener);
 
     @Test
     void testRunSimulationOnFrame(){
@@ -20,13 +21,13 @@ public class SimulationTheoryTest {
 
         simulationTheory.runSimulationOnFrame();
 
-        Assertions.assertTrue(simulationTheory.time >= 0);
+        assertTrue(simulationTheory.time >= 0);
 
-        Assertions.assertNotNull(simulationTheory.friendly);
+        assertNotNull(simulationTheory.friendly);
 
-        Assertions.assertNotNull(simulationTheory.enemies);
+        assertNotNull(simulationTheory.enemies);
 
-        Assertions.assertNotNull(simulationTheory.simulations);
+        assertNotNull(simulationTheory.simulations);
     }
 
     @Test
