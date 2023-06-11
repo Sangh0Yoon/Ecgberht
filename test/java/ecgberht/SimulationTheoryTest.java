@@ -12,10 +12,10 @@ import ecgberht.Simulation.SimInfo;
 import ecgberht.Simulation.SimulationTheory;
 
 public class SimulationTheoryTest {
+    BW objBW = new BW(null);
+
     @Test
     void testRunSimulationOnFrame(){
-        BW objBW = new BW(null);
-
         SimulationTheory simulationTheory = new SimulationTheory(objBW);
 
         simulationTheory.runSimulationOnFrame();
@@ -31,8 +31,6 @@ public class SimulationTheoryTest {
 
     @Test
     void runSimulationOnFrame_NoNeedForSim_CorrectResult(){
-        BW objBW = new BW(null);
-
         SimulationTheory simulationTheory = new SimulationTheory(objBW);
 
         simulationTheory.friendly.add(new Cluster());
