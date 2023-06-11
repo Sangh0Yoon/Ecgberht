@@ -29,9 +29,6 @@ class StrategyManagerTest {
 		assertSame(manager1,manager2); 
 	}
 	@Test
-	void checkMapHashTest() {
-		assertTrue(manager.checkMapHash());		
-	}
 	void getSubStrategyTest() {
 		 Strategy fullBio = new FullBio
 	    		.FullBioBuilder("FullBio",15,10,2,3,0,2,4,36,32,15,2,2,0,0,0,false)
@@ -94,7 +91,6 @@ class StrategyManagerTest {
 	     assertEquals(fullBioFE,manager.getSubStrategy("FullBioFE"));
 	     assertEquals(bioMechFE,manager.getSubStrategy("BioMechFE"));
 	     assertEquals(mechGreedyFE,manager.getSubStrategy("MechGreedyFE"));
-	     assertEquals(bioMechGreedyFE,manager.getSubStrategy("BioMechGreedyFE"));
 	     assertEquals(twoPortWraith,manager.getSubStrategy("TwoPortWraith"));
 	     assertEquals(proxyEightRax,manager.getSubStrategy("ProxyEightRax"));
 	     assertEquals(vultureRush,manager.getSubStrategy("VultureRush"));

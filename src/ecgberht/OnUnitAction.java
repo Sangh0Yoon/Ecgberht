@@ -13,8 +13,12 @@ public abstract class OnUnitAction {
     protected Map<Unit, UnitInfo> enemy = new TreeMap<>();
 	public OnUnitAction(Unit unit) {
 		this.unit = unit;
-		this.ally = storage.getAllyUnits();
-		this.enemy = storage.getEnemyUnits();
+	}
+	public void setAlly(Map<Unit, UnitInfo> ally) {	//user input NULL for testcase
+		this.ally = ally;
+	}
+	public void setEnemy(Map<Unit, UnitInfo> enemy) {	//user input NULL for testcase
+		this.enemy = enemy;
 	}
 	abstract void action();
 	protected void pushCreatedAllyUnit(Unit unit) {

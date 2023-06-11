@@ -16,9 +16,6 @@ import static ecgberht.Ecgberht.getGs;
 public class StrategyManager {
 	private static StrategyManager managerInstance;
 	  private StrategyManager() {
-	        initBaseStrategies();
-	        this.setStrategy(initStrat());
-	        AddSpecialUnitsIfParticularMap();
 	    }
 	  public static StrategyManager getInstance() {
 		  if(!managerUsed) {
@@ -96,6 +93,11 @@ public class StrategyManager {
 
 	public boolean checkMapHash() {
 		return getGs().getGame().getBWMap().mapHash().equals("666dd28cd3c85223ebc749a481fc281e58221e4a");
+	}
+	private void initialize() {	//for Test
+		initBaseStrategies();				
+        this.setStrategy(initStrat());	
+        AddSpecialUnitsIfParticularMap();
 	}
 
     private void initBaseStrategies() {
