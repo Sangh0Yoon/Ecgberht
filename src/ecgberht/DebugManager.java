@@ -4,6 +4,8 @@ import bwem.Base;
 import bwem.ChokePoint;
 import bwem.Mineral;
 import cameraModule.CameraModule;
+import cameraModule.CameraModuleFactory;
+import cameraModule.CameraModuleImpl;
 import ecgberht.Agents.*;
 import ecgberht.Util.ColorUtil;
 import ecgberht.Util.MutablePair;
@@ -22,17 +24,19 @@ public class DebugManager {
 
     private MapDrawer mapDrawer;
     private InteractionHandler iH;
+    private TilePosition startPos;
+    protected BW game;
     private CameraModule skycladObserver;
     TextSetting _textsetting;
-    DebugManager(MapDrawer mapDrawer, InteractionHandler iH, CameraModule skycladObserver) {
+    DebugManager(MapDrawer mapDrawer, InteractionHandler iH, TilePosition startPos, BW game) {
         this.mapDrawer = mapDrawer;
         this.iH = iH;
-        this.skycladObserver = skycladObserver;
+        this.skycladObserver = CameraModuleFactory.createCameraModule(startPos, game);
     }
 
     public void keyboardInteraction(String text) {
         setInteractionText(text);
-        _textsetting.doInteraction(CameraModule skycladObserver);
+        _textsetting.doInteraction(skycladObserver);
     }
     
     public void setInteractionText(String text){
@@ -80,26 +84,7 @@ public class DebugManager {
             }
             
             for (Agent ag : gameState.agents.values()) {
-                if (ag instanceof VultureAgent) {
-                    VultureAgent vulture = (VultureAgent) ag;
-                    mapDrawer.drawTextMap(vulture.myUnit.getPosition(), ColorUtil.formatText(ag.statusToString(), ColorUtil.White));
-                } else if (ag instanceof VesselAgent) {
-                    VesselAgent vessel = (VesselAgent) ag;
-                    mapDrawer.drawTextMap(vessel.myUnit.getPosition(), ColorUtil.formatText(ag.statusToString(), ColorUtil.White));
-                    if (vessel.follow != null)
-                        mapDrawer.drawLineMap(vessel.myUnit.getPosition(), vessel.follow.getSquadCenter(), Color.YELLOW);
-                } else if (ag instanceof WraithAgent) {
-                    WraithAgent wraith = (WraithAgent) ag;
-                    mapDrawer.drawTextMap(wraith.myUnit.getPosition().add(new Position(-16,
-                            UnitType.Terran_Wraith.dimensionUp())), ColorUtil.formatText(wraith.name, ColorUtil.White));
-                } else if (ag instanceof DropShipAgent) {
-                    DropShipAgent dropShip = (DropShipAgent) ag;
-                    mapDrawer.drawTextMap(dropShip.myUnit.getPosition(), ColorUtil.formatText(ag.statusToString(), ColorUtil.White));
-                } else if (ag instanceof WorkerScoutAgent) {
-                    WorkerScoutAgent worker = (WorkerScoutAgent) ag;
-                    mapDrawer.drawTextMap(worker.myUnit.getPosition().add(new Position(-16,
-                            UnitType.Terran_SCV.dimensionUp())), ColorUtil.formatText(worker.statusToString(), ColorUtil.White));
-                }
+                ag.drawAgentOnMap(ag, mapDrawer);
             }
             if (gameState.enemyStartBase != null)
                 mapDrawer.drawTextMap(gameState.enemyStartBase.getLocation().toPosition(), ColorUtil.formatText("EnemyStartBase", ColorUtil.White));
@@ -282,57 +267,109 @@ public class DebugManager {
     }
 }
 
-public abstract class TextSetting{
-    private boolean setting;
-    private abstract String setting_name;
-    private abstract String sending_name;
+abstract class TextSetting{
+    protected boolean setting;
 
-    //setting config manager
-    private String setting_default =  'setting = ConfigManager.getConfig().ecgConfig.';
-    private String setting_ConfigManager = setting_default + setting_name+";"
-
-    //sending Text
-    private String sending_Text_enabled = sending_name +" enabled"
-    private String sending_Text_disabled = sending_name +" disabled"
-
-    //setting_debugText
-    private String setting_debugText = "ConfigManager.getConfig().ecgConfig." + setting_name+"= !setting;"
+    protected abstract void setting_ConfigManager();
+    protected abstract void sendText();
+    protected abstract void setting_debugText();
 
     public void doInteraction(CameraModule skycladObserver){
-        exec(setting_ConfigManager);
-        Util.sendText(!setting ? sending_Text_enabled : sending_Text_disabled );
-        exec(setting_debugText);
+        setting_ConfigManager();
+        sendText();
+        setting_debugText();
     }
 }
 
-public class TextSetting_dt extends TextSetting{
-    setting_name = "debugText";
-    sending_name = "debugText";
+class TextSetting_dt extends TextSetting{
+    @Override
+    protected void setting_ConfigManager(){
+        setting = ConfigManager.getConfig().ecgConfig.debugText;
+    }
+    @Override
+    protected void sendText(){
+        Util.sendText(!setting ? "debugText enabled" : "debugText disabled");
+    }
+    @Override
+    protected void setting_debugText(){
+        ConfigManager.getConfig().ecgConfig.debugText = !setting;
+    }
 }
-public class TextSetting_dc extends TextSetting{
-    setting_name = "debugConsole";
-    sending_name = "debugConsole";
+class TextSetting_dc extends TextSetting{
+    @Override
+    protected void setting_ConfigManager(){
+        setting = ConfigManager.getConfig().ecgConfig.debugConsole;
+    }
+    @Override
+    protected void sendText(){
+        Util.sendText(!setting ? "debugConsole enabled" : "debugConsole disabled");
+    }
+    @Override
+    protected void setting_debugText(){
+        ConfigManager.getConfig().ecgConfig.debugConsole = !setting;
+    }
 }
-public class TextSetting_ds extends TextSetting{
-    setting_name = "debugScreen";
-    sending_name = "debugScreen";
+class TextSetting_ds extends TextSetting{
+    @Override
+    protected void setting_ConfigManager(){
+        setting = ConfigManager.getConfig().ecgConfig.debugScreen;
+    }
+    @Override
+    protected void sendText(){
+        Util.sendText(!setting ? "debugScreen enabled" : "debugScreen disabled");
+    }
+    @Override
+    protected void setting_debugText(){
+        ConfigManager.getConfig().ecgConfig.debugScreen = !setting;
+    }
 }
-public class TextSetting_obs extends TextSetting{
-    setting_name = 'enableSkyCladObserver';
-    sending_name = "Observer";
-
+class TextSetting_obs extends TextSetting{
+    @Override
+    protected void setting_ConfigManager(){
+        setting = ConfigManager.getConfig().ecgConfig.enableSkyCladObserver;
+    }
+    @Override
+    protected void sendText(){
+        Util.sendText(!setting ? "Observer enabled" : "Observer disabled");
+    }
+    @Override
+    protected void setting_debugText(){
+        ConfigManager.getConfig().ecgConfig.enableSkyCladObserver = !setting;
+    }
     @Override
     public void doInteraction(CameraModule skycladObserver){
-        super.doInteraction()
+        super.doInteraction(skycladObserver);
         skycladObserver.toggle();
     }
 }
-public class TextSetting_sounds extends TextSetting{
-    setting_name = "sounds";
-    sending_name = "Sounds";
+class TextSetting_sounds extends TextSetting{
+    @Override
+    protected void setting_ConfigManager(){
+        setting = ConfigManager.getConfig().ecgConfig.sounds;
+    }
+    @Override
+    protected void sendText(){
+        Util.sendText(!setting ? "Sounds Effects enabled" : "Sounds Effects disabled");
+    }
+    @Override
+    protected void setting_debugText(){
+        ConfigManager.getConfig().ecgConfig.sounds = !setting;
+    }
+    
 }
-public class TextSetting_noattack extends TextSetting{
-    setting_name = "debugDisableAttack";
-    sending_name = "Debug Attack";
+class TextSetting_noattack extends TextSetting{
+    @Override
+    protected void setting_ConfigManager(){
+        setting = ConfigManager.getConfig().ecgConfig.debugDisableAttack;
+    }
+    @Override
+    protected void sendText(){
+        Util.sendText(!setting ? "Debug Attack enabled" : "Debug Attack disabled");
+    }
+    @Override
+    protected void setting_debugText(){
+        ConfigManager.getConfig().ecgConfig.debugDisableAttack = !setting;
+    }
+    
 }
        

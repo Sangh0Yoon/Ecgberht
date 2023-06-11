@@ -1,12 +1,12 @@
 package ecgberht.Agents;
 
 import bwem.util.Pair;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
 import ecgberht.Simulation.SimInfo;
 import ecgberht.UnitInfo;
+import ecgberht.Util.ColorUtil;
 import ecgberht.Util.Util;
 import ecgberht.Util.UtilMicro;
+import org.openbw.bwapi4j.MapDrawer;
 import org.openbw.bwapi4j.Position;
 import org.openbw.bwapi4j.type.UnitType;
 import org.openbw.bwapi4j.type.WeaponType;
@@ -24,7 +24,6 @@ import static ecgberht.Ecgberht.getGs;
 
 public class WraithAgent extends Agent implements Comparable<Unit> {
 
-    private static final Logger logger = LoggerFactory.getLogger(WraithAgent.class);
     public Wraith unit;
     public String name;
     private Set<UnitInfo> airAttackers = new TreeSet<>();
@@ -71,7 +70,8 @@ public class WraithAgent extends Agent implements Comparable<Unit> {
             }
             return false;
         } catch (Exception e) {
-            logger.error("Exception occurred in WraithAgent", e);
+            System.err.println("Exception WraithAgent");
+            e.printStackTrace();
         }
         return false;
     }
@@ -114,7 +114,7 @@ public class WraithAgent extends Agent implements Comparable<Unit> {
         return Util.chooseAttackPosition(unit.getPosition(), true);
     }
 
-    private double calculateHarassTargetScore(UnitInfo u){
+    public double calculateHarassTargetScore(UnitInfo u){
         double unitDistance = unitInfo.toUnitInfoDistance().getDistance(u);
         double harassTargetScore;
         if (u.unitType.isWorker()) {
@@ -165,4 +165,9 @@ public class WraithAgent extends Agent implements Comparable<Unit> {
         return this.unit.getId() - v1.getId();
     }
 
+    @Override
+    public void drawAgentOnMap(Agent agent, MapDrawer mapDrawer) {
+        WraithAgent wraith = (WraithAgent) agent;
+        mapDrawer.drawTextMap(wraith.myUnit.getPosition().add(new Position(-16, UnitType.Terran_Wraith.dimensionUp())), ColorUtil.formatText(wraith.name, ColorUtil.White));
+    }
 }

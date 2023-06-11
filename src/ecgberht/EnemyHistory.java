@@ -2,7 +2,6 @@ package ecgberht;
 
 import java.util.LinkedList;
 
-import bwapi.Race;
 import ecgberht.Util.Util;
 
 public class EnemyHistory {

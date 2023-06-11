@@ -4,8 +4,10 @@ import ecgberht.Simulation.SimInfo;
 import ecgberht.Squad;
 import ecgberht.UnitInfo;
 import ecgberht.UnitInfoDistance;
+import ecgberht.Util.ColorUtil;
 import ecgberht.Util.Util;
 import ecgberht.Util.UtilMicro;
+import org.openbw.bwapi4j.MapDrawer;
 import org.openbw.bwapi4j.Position;
 import org.openbw.bwapi4j.type.*;
 import org.openbw.bwapi4j.unit.*;
@@ -59,57 +61,18 @@ public class VesselAgent extends Agent implements Comparable<Unit> {
                 retreat();
                 return false;
             }
-            switch (status) {
-                case DMATRIX:
-                    if (unitInfo.energy <= TechType.Defensive_Matrix.energyCost()) {
-                        getGs().wizard.irradiatedUnits.remove(unit);
-                        status = Status.IDLE;
-                        target = null;
-                        oldTarget = null;
-                    }
-                    break;
-                case IRRADIATE:
-                    if (unitInfo.energy <= TechType.Irradiate.energyCost()) {
-                        getGs().wizard.irradiatedUnits.remove(unit);
-                        status = Status.IDLE;
-                        target = null;
-                        oldTarget = null;
-                    }
-                    break;
-                case EMP:
-                    if (unitInfo.energy <= TechType.EMP_Shockwave.energyCost()) {
-                        getGs().wizard.EMPedUnits.remove(unit);
-                        status = Status.IDLE;
-                        target = null;
-                        oldTarget = null;
-                    }
-                    break;
-            }
+            if(status == Status.DMATRIX) statusChange_DMATRIX();
+            else if(status == Status.IRRADIATE) statusChange_IRRADIATE();
+            else if(status == Status.EMP) statusChange_EMP();
             center = follow.getSquadCenter();
             getNewStatus();
-            switch (status) {
-                case IRRADIATE:
-                    irradiate();
-                    break;
-                case DMATRIX:
-                    dMatrix();
-                    break;
-                case KITE:
-                    kite();
-                    break;
-                case FOLLOW:
-                    followSquad();
-                    break;
-                case RETREAT:
-                    retreat();
-                    break;
-                case HOVER:
-                    hover();
-                    break;
-                case EMP:
-                    emp();
-                    break;
-            }
+            if(status == Status.IRRADIATE) irradiate();
+            else if(status == Status.DMATRIX) dMatrix();
+            else if(status == Status.KITE) kite();
+            else if(status == Status.FOLLOW) followSquad();
+            else if(status == Status.RETREAT) retreat();
+            else if(status == Status.HOVER) hover();
+            else if(status == Status.EMP) emp();
             return false;
         } catch (Exception e) {
             System.err.println("Exception VesselAgent");
@@ -118,6 +81,30 @@ public class VesselAgent extends Agent implements Comparable<Unit> {
         return false;
     }
 
+    private void statusChange_DMATRIX(){
+        if (unitInfo.energy <= TechType.Defensive_Matrix.energyCost()) {
+            getGs().wizard.irradiatedUnits.remove(unit);
+            status = Status.IDLE;
+            target = null;
+            oldTarget = null;
+        }
+    }
+    private void statusChange_IRRADIATE(){
+        if (unitInfo.energy <= TechType.Irradiate.energyCost()) {
+            getGs().wizard.irradiatedUnits.remove(unit);
+            status = Status.IDLE;
+            target = null;
+            oldTarget = null;
+        }
+    }
+    private void statusChange_EMP(){
+        if (unitInfo.energy <= TechType.EMP_Shockwave.energyCost()) {
+            getGs().wizard.EMPedUnits.remove(unit);
+            status = Status.IDLE;
+            target = null;
+            oldTarget = null;
+        }
+    }
     private void hover() {
         Position attack = follow.attack;
         if (attack == null || !getGs().getGame().getBWMap().isValidPosition(attack)) return;
@@ -338,6 +325,14 @@ public class VesselAgent extends Agent implements Comparable<Unit> {
         else ((MobileUnit) myUnit).move(getGs().getPlayer().getStartLocation().toPosition());
         attackPos = null;
         attackUnit = null;
+    }
+
+    @Override
+    public void drawAgentOnMap(Agent agent, MapDrawer mapDrawer) {
+        VesselAgent vessel = (VesselAgent) agent;
+        mapDrawer.drawTextMap(vessel.myUnit.getPosition(), ColorUtil.formatText(agent.statusToString(), ColorUtil.White));
+        if (vessel.follow != null)
+            mapDrawer.drawLineMap(vessel.myUnit.getPosition(), vessel.follow.getSquadCenter(), Color.YELLOW);
     }
 
     @Override
