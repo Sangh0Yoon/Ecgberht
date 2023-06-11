@@ -4,6 +4,7 @@ import ecgberht.UnitInfo;
 import org.openbw.bwapi4j.Position;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -11,7 +12,7 @@ import java.util.TreeSet;
 Thanks to @Yegers for improving performance
 */
 public class Cluster {
-    public Set<UnitInfo> units = new TreeSet<>();
+    public Set<UnitInfo> units = new HashSet<>();
     public double modeX = 0;
     public double modeY = 0;
     public double maxDistFromCenter = 0;

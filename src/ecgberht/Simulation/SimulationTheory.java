@@ -27,9 +27,9 @@ import static ecgberht.Ecgberht.getGs;
 public class SimulationTheory {
 
     public long time;
-    private List<Cluster> friendly = new ArrayList<>();
-    private List<Cluster> enemies = new ArrayList<>();
-    private List<SimInfo> simulations = new ArrayList<>();
+    public List<Cluster> friendly = new ArrayList<>();
+    public List<Cluster> enemies = new ArrayList<>();
+    public List<SimInfo> simulations = new ArrayList<>();
     private Simulator simulator;
     private BWAPI4JAgentFactory factory;
     private Evaluator evaluator;
@@ -195,7 +195,7 @@ public class SimulationTheory {
      *
      * @return True if there is no need for running {@link #runSimulationOnFrame()}, else returns false
      */
-    private boolean noNeedForSim() {
+    public boolean noNeedForSim() {
         int workerThreats = 0;
         if ((friendly.isEmpty() || enemies.isEmpty()) && getGs().agents.isEmpty()) return true;
         for (Unit u : getGs().enemyCombatUnitMemory) {

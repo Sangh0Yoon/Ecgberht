@@ -3,23 +3,12 @@ package ecgberht;
 
 
 import org.junit.jupiter.api.BeforeEach;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-
 import org.junit.jupiter.api.Test;
 import org.openbw.bwapi4j.Position;
 import org.openbw.bwapi4j.unit.PlayerUnit;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-
-
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,8 +37,6 @@ class UnitInfoDistanceTest {
         assertEquals(expectedDistance, unitInfoDistance.getDistance(new Position(20, 20)));;
         assertEquals(expectedDistance2, unitInfoDistance.getDistance(new Position(40, 40)));
     }
-
-
 
 
 
